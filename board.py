@@ -84,8 +84,11 @@ def can_place(board, piece, pos):
 
 
 def print_board(board):
+    w, h = get_dim(board)
+    print("╭─" + "─" * w + "─╮")
     for row in board:
-        print("".join([' ', '󰿦', '', '%'][v] for v in row))
+        print("│ " + "".join([' ', '󰿦', '', '%'][v] for v in row) + " │")
+    print("╰─" + "─" * w + "─╯")
     print("")
 
 
