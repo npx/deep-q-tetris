@@ -102,3 +102,16 @@ def place_piece(board, piece, pos):
             board_copy[u + r][v + c] += 2 * col
 
     return board_copy
+
+
+def clear_lines(board):
+    w, h = get_dim(board)
+
+    cleared_board = list(filter(lambda row: row.count(0) > 0, board))
+    cleared_lines = h - len(cleared_board)
+
+    fill = [[0] * w] * cleared_lines
+
+    new_board = fill + cleared_board
+
+    return (new_board, cleared_lines)
