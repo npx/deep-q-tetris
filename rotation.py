@@ -1,5 +1,6 @@
 import pieces
-from board import can_place, make_board, print_board, place_piece
+from board import can_place, make_board, place_piece, print_board, clear_lines
+from board import lock
 
 # TODO 180s
 NOT_I_KICKS = {
@@ -50,28 +51,3 @@ def get_kick(board, piece, direction, pos):
             return kicked_position
 
     return None
-
-
-if __name__ == "__main__":
-    tst_board = """
-    xx........
-    x.........
-    x.xxxxxxxx
-    x..xxxxxxx
-    x.xxxxxxxx
-    """
-
-    piece = pieces.make_piece("t")
-    pos = (0, 1)
-
-    board = make_board(tst_board)
-    print_board(board)
-
-    placed = place_piece(board, piece, pos)
-    print_board(placed)
-
-    kick = get_kick(board, piece, 1, pos)
-    if kick:
-        rotated = pieces.get_rotation(piece, 1)
-        placed = place_piece(board, rotated, kick)
-    print_board(placed)
