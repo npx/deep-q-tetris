@@ -115,3 +115,13 @@ def clear_lines(board):
     new_board = fill + cleared_board
 
     return (new_board, cleared_lines)
+
+
+def lock(board):
+    board_copy = [x[:] for x in board]
+
+    for r, row in enumerate(board_copy):
+        for c, col in enumerate(row):
+            board_copy[r][c] = not not board_copy[r][c] and True
+
+    return board_copy
