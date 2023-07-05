@@ -93,6 +93,9 @@ def print_board(board):
 
 
 def place_piece(board, piece, pos):
+    if not can_place(board, piece, pos):
+        raise Exception("cannot place piece")
+
     blocks = pieces.get_blocks(piece)
     u, v = pos
     board_copy = [x[:] for x in board]
