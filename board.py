@@ -99,10 +99,13 @@ def place_piece(board, piece, pos):
     blocks = pieces.get_blocks(piece)
     u, v = pos
     board_copy = [x[:] for x in board]
+    w, h = get_dim(board)
 
     for r, row in enumerate(blocks):
         for c, col in enumerate(row):
-            board_copy[u + r][v + c] += 2 * col
+            tu, tv = u + r, v + c
+            if 0 <= tu < h and 0 <= tv < w:
+                board_copy[tu][tv] += 2 * col
 
     return board_copy
 
