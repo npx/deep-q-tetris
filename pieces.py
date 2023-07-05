@@ -28,8 +28,8 @@ def get_rotation(piece, direction):
 
 def get_dim(piece):
     name, rotation = piece
-    piece = get_blocks(piece)
-    return (len(piece), len(piece[0]))
+    blocks = get_blocks(piece)
+    return (len(blocks[0]), len(blocks))
 
 
 def get_blocks(piece):
