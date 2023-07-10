@@ -31,3 +31,5 @@ t_piece_offset_height = [
     (1, 0),
     (0, 0),
 ]
+
+t_distinct_rotations = 4

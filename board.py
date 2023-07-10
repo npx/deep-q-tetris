@@ -164,14 +164,13 @@ def get_placements(board, piece):
 
 if __name__ == "__main__":
     board = make_board()
-    piece = pieces.make_piece("t")
-    piece = pieces.get_rotation(piece, 1)
+    piece = pieces.make_piece("l")
 
-    for rot in range(4):
-        piece = pieces.get_rotation(piece, rot)
+    for _ in range(pieces.get_distinct_rotations(piece)):
         for p in get_placements(board, piece):
             _, pos = p
             placed = place_piece(board, piece, pos)
             print_board(placed)
             print(p)
             input()
+        piece = pieces.get_rotation(piece, 1)

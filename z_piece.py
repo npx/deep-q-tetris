@@ -31,3 +31,5 @@ z_piece_offset_height = [
     (1, 0),
     (0, 0),
 ]
+
+z_distinct_rotations = 2

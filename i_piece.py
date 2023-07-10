@@ -35,3 +35,5 @@ i_piece_offset_height = [
     (2, 1),
     (0, 0),
 ]
+
+i_distinct_rotations = 2
