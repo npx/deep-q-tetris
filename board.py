@@ -141,6 +141,7 @@ def get_placements(board, piece):
     w, h = get_dim(board)
     wp, hp = pieces.get_dim(piece)
     owl, owr = pieces.offset_width(piece)
+    oht, ohb = pieces.offset_height(piece)
 
     actual_piece_width = wp - owl - owr
 
@@ -152,7 +153,7 @@ def get_placements(board, piece):
     def check(pos): return can_place(board, piece, pos)
 
     for c in range(col_from, col_to + 1):
-        for r in range(h):
+        for r in range(-oht, h):
             pos = (r, c)
             next = (r + 1, c)
             if check(pos) and not check(next):
