@@ -21,9 +21,9 @@ def make_board(board=None):
             [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
             [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
             [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+            [0, 0, 0, 0, 0, 0, 0, 1, 0, 0],
             [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-            [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-            [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+            [0, 0, 1, 0, 0, 1, 0, 0, 0, 0],
         ]
     return parse_board(board)
 
@@ -133,3 +133,46 @@ def lock(board):
             board_copy[r][c] = not not board_copy[r][c] and True
 
     return board_copy
+
+
+def get_placements(board, piece):
+    w, h = get_dim(board)
+    wp, hp = pieces.get_dim(piece)
+    owl, owr = pieces.offset_width(piece)
+
+    actual_piece_width = wp - owl - owr
+
+    col_from = -owl
+    col_to = col_from + w - actual_piece_width
+
+    placements = []
+
+    def check(pos): return can_place(board, piece, pos)
+
+    for c in range(col_from, col_to + 1):
+        for r in range(h):
+            pos = (r, c)
+            next = (r + 1, c)
+            if check(pos) and not check(next):
+                placements.append((piece, pos))
+
+    return placements
+
+
+if __name__ == "__main__":
+    board = make_board()
+    piece = pieces.make_piece("t")
+    piece = pieces.get_rotation(piece, 1)
+    print(can_place(board, piece, (0, -1)))
+    print(can_place(board, piece, (1, -1)))
+
+    # placed = place_piece(board, piece, (1, -1))
+    # print_board(placed)
+    for rot in range(4):
+        piece = pieces.get_rotation(piece, rot)
+        for p in get_placements(board, piece):
+            _, pos = p
+            print(p)
+            placed = place_piece(board, piece, pos)
+            print_board(placed)
+            input()
