@@ -59,7 +59,7 @@ def is_piece_in_bounds(board, piece, pos):
     over_right = min(max(col+wp-wb, 0), wp)
     right_oob = get_slice(blocks, (0, wp-over_right), (over_right, hp))
 
-    over_bottom = min(max(row+hp-wb, 0), hp)
+    over_bottom = min(max(row+hp-hb, 0), hp)
     bot_oob = get_slice(blocks, (hp-over_bottom, 0), (wp, over_bottom))
 
     in_bounds = sum(sum(v) for v in left_oob + top_oob + right_oob + bot_oob)
