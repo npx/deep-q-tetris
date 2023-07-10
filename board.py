@@ -71,13 +71,15 @@ def can_place(board, piece, pos):
     if not is_piece_in_bounds(board, piece, pos):
         return False
 
-    dim = pieces.get_dim(piece)
+    w, h = get_dim(board)
     blocks = pieces.get_blocks(piece)
-    slice = get_slice(board, pos, dim)
 
-    for brow, prow in zip(slice, blocks):
-        for bval, pval in zip(brow, prow):
-            if pval > 0 and bval > 0:
+    u, v = pos
+    for r, row in enumerate(blocks):
+        for c, value in enumerate(row):
+            ur = u+r
+            vc = v+c
+            if 0 <= ur < h and 0 <= vc < w and value > 0 and board[ur][vc] > 0:
                 return False
 
     return True
