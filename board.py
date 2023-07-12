@@ -86,9 +86,10 @@ def can_place(board, piece, pos):
     return True
 
 
-def print_board(board):
+def print_board(board, clear=False):
     w, h = get_dim(board)
-    os.system('clear')
+    if clear:
+        os.system('clear')
     print("  ╭─" + "─" * w + "─╮")
     for r, row in enumerate(board):
         n = f'{r:02}'
@@ -164,13 +165,13 @@ def get_placements(board, piece):
 
 if __name__ == "__main__":
     board = make_board()
-    piece = pieces.make_piece("l")
+    piece = pieces.make_piece("o")
 
     for _ in range(pieces.get_distinct_rotations(piece)):
         for p in get_placements(board, piece):
             _, pos = p
             placed = place_piece(board, piece, pos)
-            print_board(placed)
+            print_board(placed, True)
             print(p)
             input()
         piece = pieces.get_rotation(piece, 1)
