@@ -1,6 +1,5 @@
 import pieces
-from board import can_place, make_board, place_piece, print_board, clear_lines
-from board import lock
+from board import can_place
 
 # TODO 180s
 NOT_I_KICKS = {
