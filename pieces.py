@@ -5,6 +5,10 @@ import o_piece
 import s_piece
 import t_piece
 import z_piece
+from typing import TypeAlias
+
+
+Piece: TypeAlias = tuple[str, int]
 
 PIECES = {
     "i": i_piece.i_piece,
@@ -47,36 +51,36 @@ DISTINCT_ROTATION = {
 }
 
 
-def make_piece(name):
+def make_piece(name: str) -> Piece:
     return (name, 0)
 
 
-def get_rotation(piece, direction):
+def get_rotation(piece: Piece, direction: int) -> Piece:
     name, rotation = piece
     return (name, (rotation+direction) % 4)
 
 
-def get_dim(piece):
+def get_dim(piece: Piece) -> tuple[int, int]:
     name, rotation = piece
     blocks = get_blocks(piece)
     return (len(blocks[0]), len(blocks))
 
 
-def get_blocks(piece):
+def get_blocks(piece: Piece) -> list[list[int]]:
     name, rotation = piece
     return PIECES[name][rotation]
 
 
-def offset_width(piece):
+def offset_width(piece: Piece) -> tuple[int, int]:
     name, rotation = piece
     return OFFSET_WIDTH[name][rotation]
 
 
-def offset_height(piece):
+def offset_height(piece: Piece) -> tuple[int, int]:
     name, rotation = piece
     return OFFSET_HEIGHT[name][rotation]
 
 
-def get_distinct_rotations(piece):
+def get_distinct_rotations(piece: Piece) -> int:
     name, rotation = piece
     return DISTINCT_ROTATION[name]

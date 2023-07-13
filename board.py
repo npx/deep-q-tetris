@@ -1,8 +1,14 @@
 import pieces
 import os
+from typing import TypeAlias, Optional
+
+Board: TypeAlias = list[list[int]]
+Position: TypeAlias = tuple[int, int]
+Dimensions: TypeAlias = tuple[int, int]
+Placement: TypeAlias = tuple[pieces.Piece, Position]
 
 
-def make_board(board=None):
+def make_board(board: Optional[str] = None) -> Board:
     if not board:
         return [
             [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
@@ -29,22 +35,22 @@ def make_board(board=None):
     return parse_board(board)
 
 
-def parse_board(board):
+def parse_board(board: str) -> Board:
     lines = [line.strip() for line in board.strip().splitlines()]
     return list(list(map(lambda x: [1, 0][x == '.'], line)) for line in lines)
 
 
-def get_dim(board):
+def get_dim(board: Board) -> tuple[int, int]:
     return (len(board[0]), len(board))
 
 
-def get_slice(board, pos, dim):
+def get_slice(board: Board, pos: Position, dim: Dimensions) -> list[list[int]]:
     u, v = pos
     w, h = dim
     return [rows[v:v+w] for rows in board[u:u+h]]
 
 
-def is_piece_in_bounds(board, piece, pos):
+def is_piece_in_bounds(board: Board, piece: pieces.Piece, pos: Position) -> bool:
     # TODO consider that piece can in fact go out of the top
     wb, hb = get_dim(board)
     wp, hp = pieces.get_dim(piece)
@@ -68,7 +74,7 @@ def is_piece_in_bounds(board, piece, pos):
     return not in_bounds
 
 
-def can_place(board, piece, pos):
+def can_place(board: Board, piece: pieces.Piece, pos: Position) -> bool:
     if not is_piece_in_bounds(board, piece, pos):
         return False
 
@@ -86,7 +92,7 @@ def can_place(board, piece, pos):
     return True
 
 
-def print_board(board, clear=False):
+def print_board(board: Board, clear: Optional[bool] = False) -> None:
     w, h = get_dim(board)
     if clear:
         os.system('clear')
@@ -97,7 +103,7 @@ def print_board(board, clear=False):
     print("  ╰─" + "─" * w + "─╯")
 
 
-def place_piece(board, piece, pos):
+def place_piece(board: Board, piece: pieces.Piece, pos: Position) -> Board:
     if not can_place(board, piece, pos):
         raise Exception("cannot place piece")
 
@@ -115,7 +121,7 @@ def place_piece(board, piece, pos):
     return board_copy
 
 
-def clear_lines(board):
+def clear_lines(board: Board) -> tuple[Board, int]:
     w, h = get_dim(board)
 
     cleared_board = list(filter(lambda row: row.count(0) > 0, board))
@@ -128,7 +134,7 @@ def clear_lines(board):
     return (new_board, cleared_lines)
 
 
-def lock(board):
+def lock(board: Board) -> Board:
     board_copy = [x[:] for x in board]
 
     for r, row in enumerate(board_copy):
@@ -138,7 +144,7 @@ def lock(board):
     return board_copy
 
 
-def get_placements(board, piece):
+def get_placements(board: Board, piece: pieces.Piece) -> list[Placement]:
     w, h = get_dim(board)
     wp, hp = pieces.get_dim(piece)
     owl, owr = pieces.offset_width(piece)
@@ -151,7 +157,7 @@ def get_placements(board, piece):
 
     placements = []
 
-    def check(pos): return can_place(board, piece, pos)
+    def check(pos: Position) -> bool: return can_place(board, piece, pos)
 
     for c in range(col_from, col_to + 1):
         for r in range(-oht, h):
@@ -168,10 +174,10 @@ if __name__ == "__main__":
     piece = pieces.make_piece("o")
 
     for _ in range(pieces.get_distinct_rotations(piece)):
-        for p in get_placements(board, piece):
-            _, pos = p
+        for placement in get_placements(board, piece):
+            pc, pos = placement
             placed = place_piece(board, piece, pos)
             print_board(placed, True)
-            print(p)
+            print(placement)
             input()
         piece = pieces.get_rotation(piece, 1)

@@ -1,5 +1,5 @@
 import pieces
-from board import can_place
+from board import can_place, Board, Position
 
 # TODO 180s
 NOT_I_KICKS = {
@@ -31,7 +31,7 @@ I_KICKS = {
 }
 
 
-def get_kick(board, piece, direction, pos):
+def get_kick(board: Board, piece: pieces.Piece, direction: int, pos: Position) -> Position | None:
     name, fr = piece
 
     if name == "o":
