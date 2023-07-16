@@ -61,9 +61,9 @@ def encode_state(env: Environment) -> FloatTensor:
     next_queue = [ref.index(name) for name in (pieces + next_bag)[0:5]]
     additional = ([hold_num] + next_queue + [0]*10)[0:10]
 
-    state = FloatTensor(np.append(board, [additional], axis=0))
-
-    return state
+    state2D = np.append(board, [additional], axis=0)
+    state1D = state2D.flatten()
+    return FloatTensor(state1D)
 
 
 def reset() -> Environment:
