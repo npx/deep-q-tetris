@@ -1,4 +1,5 @@
-from typing import TypeAlias, Optional
+import cv2
+from typing import TypeAlias, Optional, Any
 from board import Board, Placement
 from board import make_board, place_piece, lock
 from pieces import PIECES
@@ -11,7 +12,11 @@ from pieces import get_rotation
 from pieces import make_piece
 from board import clear_lines
 from board import get_dim
-from board import print_board
+from PIL import Image
+from matplotlib import style
+
+style.use("ggplot")
+
 
 # Board, HoldPiece, CurrentBag, NextBag
 # TODO TypedDict
@@ -118,7 +123,7 @@ def get_next_states(env: Environment) -> dict[Action, FloatTensor]:
 
 
 # reward, done
-def step(action: Action, env: Environment, renderer: Optional[bool] = False) -> tuple[float, bool, Environment, Stats]:
+def step(action: Action, env: Environment) -> tuple[float, bool, Environment, Stats]:
     """step => given the "action" return the reward and done"""
     board, hold, pieces, next_bag = env
 
@@ -154,66 +159,69 @@ def step(action: Action, env: Environment, renderer: Optional[bool] = False) -> 
 
     stats = (1, count)
 
-    if renderer:
-        print_board(placed, True)
-
     if from_hold:
         new_env = (cleared, pieces[0], new_pieces, next_bag)
     else:
         new_env = (cleared, hold, new_pieces, next_bag)
     return (score, done, new_env, stats)
 
-    #
-    # lines_cleared, self.board = self.check_cleared_rows(self.board)
-    # score = 1 + (lines_cleared ** 2) * self.width
-    # self.score += score
-    # self.tetrominoes += 1
-    # self.cleared_lines += lines_cleared
-    # if not self.gameover:
-    #     self.new_piece()
-    # if self.gameover:
-    #     self.score -= 2
-    #
-    # return score, self.gameover
-    #
 
-# def render(self, video=None):
-#     if not self.gameover:
-#         img = [self.piece_colors[p] for row in self.get_current_board_state() for p in row]
-#     else:
-#         img = [self.piece_colors[p] for row in self.board for p in row]
-#     img = np.array(img).reshape((self.height, self.width, 3)).astype(np.uint8)
-#     img = img[..., ::-1]
-#     img = Image.fromarray(img, "RGB")
-#
-#     img = img.resize((self.width * self.block_size, self.height * self.block_size), 0)
-#     img = np.array(img)
-#     img[[i * self.block_size for i in range(self.height)], :, :] = 0
-#     img[:, [i * self.block_size for i in range(self.width)], :] = 0
-#
-#     img = np.concatenate((img, self.extra_board), axis=1)
-#
-#
-#     cv2.putText(img, "Score:", (self.width * self.block_size + int(self.block_size / 2), self.block_size),
-#                 fontFace=cv2.FONT_HERSHEY_DUPLEX, fontScale=1.0, color=self.text_color)
-#     cv2.putText(img, str(self.score),
-#                 (self.width * self.block_size + int(self.block_size / 2), 2 * self.block_size),
-#                 fontFace=cv2.FONT_HERSHEY_DUPLEX, fontScale=1.0, color=self.text_color)
-#
-#     cv2.putText(img, "Pieces:", (self.width * self.block_size + int(self.block_size / 2), 4 * self.block_size),
-#                 fontFace=cv2.FONT_HERSHEY_DUPLEX, fontScale=1.0, color=self.text_color)
-#     cv2.putText(img, str(self.tetrominoes),
-#                 (self.width * self.block_size + int(self.block_size / 2), 5 * self.block_size),
-#                 fontFace=cv2.FONT_HERSHEY_DUPLEX, fontScale=1.0, color=self.text_color)
-#
-#     cv2.putText(img, "Lines:", (self.width * self.block_size + int(self.block_size / 2), 7 * self.block_size),
-#                 fontFace=cv2.FONT_HERSHEY_DUPLEX, fontScale=1.0, color=self.text_color)
-#     cv2.putText(img, str(self.cleared_lines),
-#                 (self.width * self.block_size + int(self.block_size / 2), 8 * self.block_size),
-#                 fontFace=cv2.FONT_HERSHEY_DUPLEX, fontScale=1.0, color=self.text_color)
-#
-#     if video:
-#         video.write(img)
-#
-#     cv2.imshow("Deep Q-Learning Tetris", img)
-#     cv2.waitKey(1)
+def render(env: Environment, score: float, stats: Stats, video: Any | None = None) -> None:
+    colors = [
+        (0, 0, 0),
+        (255, 255, 0),
+        (147, 88, 254),
+        (54, 175, 144),
+        (255, 0, 0),
+        (102, 217, 238),
+        (254, 151, 32),
+        (0, 0, 255)
+    ]
+    text_color = (200, 20, 220)
+
+    board, hold, bag, next_bag = env
+    w, h = get_dim(board)
+    block_size = 30
+    tetrominoes, cleared_lines = stats
+
+    extra_board = np.ones((h * block_size, w * int(block_size / 2), 3),
+                          dtype=np.uint8) * np.array([204, 204, 255], dtype=np.uint8)
+
+    img = [colors[p] for row in board for p in row]
+    img = np.array(img).reshape((h, w, 3)).astype(np.uint8)
+    img = img[..., ::-1]
+    img = Image.fromarray(img, "RGB")
+
+    img = img.resize((w * block_size, h * block_size), 0)
+    img = np.array(img)
+    img[[i * block_size for i in range(h)], :, :] = 0
+    img[:, [i * block_size for i in range(w)], :] = 0
+
+    img = np.concatenate((img, extra_board), axis=1)
+
+    cv2.putText(img, "Score:", (w * block_size + int(block_size / 2), block_size),
+                fontFace=cv2.FONT_HERSHEY_DUPLEX, fontScale=1.0, color=text_color)
+    cv2.putText(img, str(score),
+                (w * block_size +
+                 int(block_size / 2), 2 * block_size),
+                fontFace=cv2.FONT_HERSHEY_DUPLEX, fontScale=1.0, color=text_color)
+
+    cv2.putText(img, "Pieces:", (w * block_size + int(block_size / 2), 4 * block_size),
+                fontFace=cv2.FONT_HERSHEY_DUPLEX, fontScale=1.0, color=text_color)
+    cv2.putText(img, str(tetrominoes),
+                (w * block_size +
+                 int(block_size / 2), 5 * block_size),
+                fontFace=cv2.FONT_HERSHEY_DUPLEX, fontScale=1.0, color=text_color)
+
+    cv2.putText(img, "Lines:", (w * block_size + int(block_size / 2), 7 * block_size),
+                fontFace=cv2.FONT_HERSHEY_DUPLEX, fontScale=1.0, color=text_color)
+    cv2.putText(img, str(cleared_lines),
+                (w * block_size +
+                 int(block_size / 2), 8 * block_size),
+                fontFace=cv2.FONT_HERSHEY_DUPLEX, fontScale=1.0, color=text_color)
+
+    if video:
+        video.write(img)
+
+    cv2.imshow("Deep Q-Learning Tetris", img)
+    cv2.waitKey(1)

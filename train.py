@@ -13,10 +13,10 @@ from deep_q_network import DeepQNetwork
 from collections import deque
 from tetris import make_environment
 from tetris import reset
+from tetris import render
 from tetris import get_next_states
 from tetris import step
 from tetris import encode_state
-from board import print_board
 
 
 def get_args():
@@ -102,16 +102,15 @@ def train(opt):
         next_state = next_states[index, :]
         action = next_actions[index]
 
-        reward, done, new_env, stats = step(action, env, False)
+        reward, done, new_env, stats = step(action, env)
 
         env = new_env
+
         score += reward
         pieces += stats[0]
         lines += stats[1]
 
-        # print_board(env[0], True)
-        # s = f"\n{epoch:4}/{opt.num_epochs} | Pcs: {pieces:3} | L: {lines:3} | Score: {score}"
-        # print(s)
+        render(new_env, score, (pieces, lines))
 
         if torch.cuda.is_available():
             next_state = next_state.cuda()
