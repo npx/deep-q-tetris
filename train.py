@@ -13,6 +13,7 @@ from deep_q_network import DeepQNetwork
 from collections import deque
 from tetris import make_environment
 from tetris import reset
+from board import print_board
 from tetris import render
 from tetris import get_next_states
 from tetris import step
@@ -28,16 +29,16 @@ def get_args():
                         help="The common height for all images")
     parser.add_argument("--block_size", type=int,
                         default=30, help="Size of a block")
-    parser.add_argument("--batch_size", type=int, default=1024,
+    parser.add_argument("--batch_size", type=int, default=512,
                         help="The number of images per batch")
-    parser.add_argument("--lr", type=float, default=1e-3)
+    parser.add_argument("--lr", type=float, default=1e-4)
     parser.add_argument("--gamma", type=float, default=0.99)
     parser.add_argument("--initial_epsilon", type=float, default=1)
     parser.add_argument("--final_epsilon", type=float, default=1e-3)
-    parser.add_argument("--num_decay_epochs", type=float, default=2000)
-    parser.add_argument("--num_epochs", type=int, default=3000)
+    parser.add_argument("--num_decay_epochs", type=float, default=100)
+    parser.add_argument("--num_epochs", type=int, default=5000)
     parser.add_argument("--save_interval", type=int, default=1000)
-    parser.add_argument("--replay_memory_size", type=int, default=30000,
+    parser.add_argument("--replay_memory_size", type=int, default=1000000,
                         help="Number of epoches between testing phases")
     parser.add_argument("--log_path", type=str, default="tensorboard")
     parser.add_argument("--saved_path", type=str, default="trained_models")
@@ -81,7 +82,15 @@ def train(opt):
         # TODO consider if this is ruining determinism. consider multiple RNGs
         u = random()
         random_action = u <= epsilon
-        next_actions, next_states = zip(*next_steps.items())
+        try:
+            next_actions, next_states = zip(*next_steps.items())
+        except:
+            board, hold, next, hidden = env
+            print_board(board)
+            print(hold, next)
+            input()
+            next_actions, next_states = [], []
+
         # batch states together
         next_states = torch.stack(next_states)
 
@@ -90,7 +99,6 @@ def train(opt):
 
         model.eval()
         with torch.no_grad():
-            # add one dimension / pseudo channel
             x = model(next_states)
             predictions = x[:, 0]
         model.train()
@@ -110,7 +118,7 @@ def train(opt):
         pieces += stats[0]
         lines += stats[1]
 
-        render(new_env, score, (pieces, lines))
+        # render(new_env, score, (pieces, lines))
 
         if torch.cuda.is_available():
             next_state = next_state.cuda()

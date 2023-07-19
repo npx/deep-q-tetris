@@ -144,18 +144,12 @@ def step(action: Action, env: Environment) -> tuple[float, bool, Environment, St
     locked = lock(placed)
     cleared, count = clear_lines(locked)
 
-    board_height = sum(1 if sum(line) > 0 else 0 for line in board)
-    cleared_height = sum(1 if sum(line) > 0 else 0 for line in cleared)
-    added_lines = cleared_height - board_height
-
-    # TODO scoring
-    # TODO end of game
-    done = sum(cleared[0]) > 0
-    done_bad = -10 if done else 0
+    done = sum(cleared[0]) + sum(cleared[1]) > 0
 
     w, h = get_dim(cleared)
 
-    score = 1 + (count ** 3) * w - (added_lines * 2) + done_bad
+    score = 1 + (count ** 2) * 10
+    score = score if not done else -2
 
     stats = (1, count)
 
@@ -163,6 +157,7 @@ def step(action: Action, env: Environment) -> tuple[float, bool, Environment, St
         new_env = (cleared, pieces[0], new_pieces, next_bag)
     else:
         new_env = (cleared, hold, new_pieces, next_bag)
+
     return (score, done, new_env, stats)
 
 
