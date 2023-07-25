@@ -109,7 +109,7 @@ def train(opt):
         pieces += stats[0]
         lines += stats[1]
 
-        if epoch > 1000 and epoch % 10 == 0:
+        if epoch > 0 and epoch % 10 == 0:
             render(new_env, score, (pieces, lines))
 
         if torch.cuda.is_available():

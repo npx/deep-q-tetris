@@ -147,12 +147,14 @@ def step(action: Action, env: Environment) -> tuple[float, bool, Environment, St
 
     # TODO scoring
     # TODO end of game
-    done = sum(cleared[0]) > 0
+    done = sum(cleared[1]) > 0
     done_bad = -10 if done else 0
 
     w, h = get_dim(cleared)
 
     score = 1 + (count ** 3) * w - (added_lines * 2) + done_bad
+    if done:
+        score = -10
 
     stats = (1, count)
 

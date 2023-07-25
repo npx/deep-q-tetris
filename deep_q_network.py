@@ -10,8 +10,6 @@ class DeepQNetwork(nn.Module):
         # Convolutional layers
         self.conv1 = nn.Conv2d(
             in_channels=1, out_channels=32, kernel_size=3, padding=1)
-        self.conv2 = nn.Conv2d(
-            in_channels=32, out_channels=32, kernel_size=3, padding=1)
         self.conv3 = nn.Conv2d(
             in_channels=32, out_channels=64, kernel_size=3, padding=1)
 
@@ -22,8 +20,6 @@ class DeepQNetwork(nn.Module):
         # More Convolutional layers
         self.conv4 = nn.Conv2d(
             in_channels=64, out_channels=128, kernel_size=3, padding=1)
-        self.conv5 = nn.Conv2d(
-            in_channels=128, out_channels=128, kernel_size=1)
         self.conv6 = nn.Conv2d(
             in_channels=128, out_channels=128, kernel_size=3, padding=1)
 
@@ -35,6 +31,7 @@ class DeepQNetwork(nn.Module):
         # ReLU non-linearity
         self.relu = nn.ReLU()
 
+        # Batch normalization and Dropout
         self.dropout = nn.Dropout(0.25)
 
     def forward(self, x):
@@ -42,7 +39,6 @@ class DeepQNetwork(nn.Module):
 
         # Convolutional layers with ReLU and BatchNorm
         x = self.relu(self.conv1(x))
-        x = self.relu(self.conv2(x))
         x = self.relu(self.conv3(x))
 
         # Collapse columns into a single pixel
@@ -50,7 +46,6 @@ class DeepQNetwork(nn.Module):
 
         # More Convolutional layers with ReLU and BatchNorm
         x = self.relu(self.conv4(x))
-        x = self.relu(self.conv5(x))
         x = self.relu(self.conv6(x))
 
         # Global average pooling across spatial dimensions
