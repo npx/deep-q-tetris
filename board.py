@@ -1,6 +1,7 @@
 import pieces
 import os
 from typing import TypeAlias, Optional
+from pieces import get_value
 
 Board: TypeAlias = list[list[int]]
 Position: TypeAlias = tuple[int, int]
@@ -78,7 +79,7 @@ def print_board(board: Board, clear: Optional[bool] = False) -> None:
     print("  ╭─" + "─" * w + "─╮")
     for r, row in enumerate(board):
         n = f'{r:02}'
-        print(n + "│ " + "".join([' ', '󰿦', '', '%'][v] for v in row) + " │")
+        print(n + "│ " + "".join(str(v) for v in row) + " │")
     print("  ╰─" + "─" * w + "─╯")
 
 
@@ -91,11 +92,13 @@ def place_piece(board: Board, piece: pieces.Piece, pos: Position) -> Board:
     board_copy = [x[:] for x in board]
     w, h = get_dim(board)
 
+    val = get_value(piece)
+
     for r, row in enumerate(blocks):
         for c, col in enumerate(row):
             tu, tv = u + r, v + c
             if 0 <= tu < h and 0 <= tv < w:
-                board_copy[tu][tv] += 2 * col
+                board_copy[tu][tv] += col * val
 
     return board_copy
 

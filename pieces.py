@@ -20,6 +20,16 @@ PIECES = {
     "z": z_piece.z_piece,
 }
 
+PIECES_VALUE = {
+    "i": 5,
+    "j": 7,
+    "l": 6,
+    "o": 1,
+    "s": 3,
+    "t": 2,
+    "z": 4,
+}
+
 OFFSET_WIDTH = {
     "i": i_piece.i_piece_offset_width,
     "j": j_piece.j_piece_offset_width,
@@ -84,3 +94,8 @@ def offset_height(piece: Piece) -> tuple[int, int]:
 def get_distinct_rotations(piece: Piece) -> int:
     name, rotation = piece
     return DISTINCT_ROTATION[name]
+
+
+def get_value(piece: Piece) -> int:
+    name, rotation = piece
+    return PIECES_VALUE[name]

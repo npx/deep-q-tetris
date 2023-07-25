@@ -91,8 +91,7 @@ def get_next_states(env: Environment) -> dict[Action, FloatTensor]:
         for placement in placements:
             pc, pos = placement
             placed = place_piece(board, piece, pos)
-            locked = lock(placed)
-            cleared, count = clear_lines(locked)
+            cleared, count = clear_lines(placed)
 
             env = (board, hold, pieces[1:], next_bag)
             states[(placement, False)] = encode_state(env)
@@ -107,8 +106,7 @@ def get_next_states(env: Environment) -> dict[Action, FloatTensor]:
             for placement in placements:
                 pc, pos = placement
                 placed = place_piece(board, piece, pos)
-                locked = lock(placed)
-                cleared, count = clear_lines(locked)
+                cleared, count = clear_lines(placed)
 
                 env = (board, pieces[0], pieces[1:], next_bag)
                 states[(placement, True)] = encode_state(env)
@@ -141,8 +139,7 @@ def step(action: Action, env: Environment) -> tuple[float, bool, Environment, St
     placement, from_hold = action
     piece, pos = placement
     placed = place_piece(board, piece, pos)
-    locked = lock(placed)
-    cleared, count = clear_lines(locked)
+    cleared, count = clear_lines(placed)
 
     board_height = sum(1 if sum(line) > 0 else 0 for line in board)
     cleared_height = sum(1 if sum(line) > 0 else 0 for line in cleared)

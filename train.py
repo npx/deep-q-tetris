@@ -73,6 +73,7 @@ def train(opt):
     score = 0
     pieces = 0
     lines = 0
+
     while epoch < opt.num_epochs:
         next_steps = get_next_states(env)
         # Exploration or exploitation
@@ -90,9 +91,7 @@ def train(opt):
 
         model.eval()
         with torch.no_grad():
-            # add one dimension / pseudo channel
-            x = model(next_states)
-            predictions = x[:, 0]
+            predictions = model(next_states)[:, 0]
         model.train()
         if random_action:
             index = randint(0, len(next_steps) - 1)  # consider determinism
@@ -110,7 +109,8 @@ def train(opt):
         pieces += stats[0]
         lines += stats[1]
 
-        render(new_env, score, (pieces, lines))
+        if epoch > 1000 and epoch % 10 == 0:
+            render(new_env, score, (pieces, lines))
 
         if torch.cuda.is_available():
             next_state = next_state.cuda()
